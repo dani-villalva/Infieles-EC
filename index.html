@@ -23,21 +23,21 @@
         <h2 class="section-title">Explora la App</h2>
         
         <div class="grid-explore">
-            <a href="#feed-section" class="card">
+            <a href="#feedContainer" class="card">
                 <div class="icon-circle"><i class="fa-solid fa-fire"></i></div>
                 <div class="card-text">
                     <h4>Casos Virales</h4>
                     <p>Los más comentados</p>
                 </div>
             </a>
-            <a href="#" class="card">
+            <a href="#submit-section" class="card">
                 <div class="icon-circle"><i class="fa-solid fa-file-signature"></i></div>
                 <div class="card-text">
                     <h4>Reportar</h4>
                     <p>Envía tu información</p>
                 </div>
             </a>
-            <a href="#search-section" class="card" id="btn-buscador">
+            <a href="#search-section" class="card">
                 <div class="icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
                 <div class="card-text">
                     <h4>Buscador VIP</h4>
@@ -67,19 +67,33 @@
             </a>
         </div>
 
+        <div id="submit-section" class="submit-panel">
+            <h2 class="section-title">Envía tu Confesión</h2>
+            <form id="confessionForm" class="confession-form">
+                <textarea placeholder="Escribe tu historia aquí de forma 100% anónima..." required></textarea>
+                <div class="file-inputs">
+                    <label class="file-btn">
+                        <i class="fa-solid fa-image"></i> Subir Imagen
+                        <input type="file" accept="image/*" hidden>
+                    </label>
+                    <label class="file-btn">
+                        <i class="fa-solid fa-microphone"></i> Subir Audio
+                        <input type="file" accept="audio/*" hidden>
+                    </label>
+                </div>
+                <button type="submit" class="submit-btn">Publicar Confesión</button>
+            </form>
+        </div>
+
         <div id="search-section" class="search-container">
             <input type="text" id="searchInput" placeholder="Buscar historias, palabras clave...">
             <div class="filters">
-                <select id="cityFilter">
-                    <option value="all">Todas las Ciudades</option>
-                </select>
-                <select id="typeFilter">
-                    <option value="all">Tipos de Infidelidad</option>
-                </select>
+                <select id="cityFilter"><option value="all">Todas las Ciudades</option></select>
+                <select id="typeFilter"><option value="all">Tipos de Infidelidad</option></select>
             </div>
         </div>
 
-        <h2 class="section-title" id="feed-section">Feed de Historias</h2>
+        <h2 class="section-title">Últimas Historias</h2>
         <main id="feedContainer"></main>
 
         <a href="#" class="banner-container bottom-banner">
@@ -109,9 +123,9 @@
             </div>
 
             <div id="renoteContent" class="hidden">
-                <h3>Respuestas (ReNOTE)</h3>
+                <h3>ReNOTE</h3>
                 <div id="commentsSection"></div>
-                <textarea placeholder="Escribe tu respuesta de forma anónima..."></textarea>
+                <textarea placeholder="Escribe tu respuesta..."></textarea>
                 <div class="renote-actions">
                     <button class="btn-primary">Publicar</button>
                     <button class="btn-secondary" id="closeModal">Cerrar</button>
