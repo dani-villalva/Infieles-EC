@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infieles EC - Descubre la verdad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <div class="container">
+        
+        <header class="header">
+            <h1>Infieles <span>EC</span></h1>
+        </header>
+
+        <a href="#" class="banner-container top-banner">
+            <img src="https://via.placeholder.com/1100x300/1E1E23/FDA1CB?text=++AQUI+TU+BANNER+PRINCIPAL++" alt="Banner Destacado">
+        </a>
+
+        <h2 class="section-title">Explora la App</h2>
+        
+        <div class="grid-explore">
+            <a href="#feed-section" class="card">
+                <div class="icon-circle"><i class="fa-solid fa-fire"></i></div>
+                <div class="card-text">
+                    <h4>Casos Virales</h4>
+                    <p>Los más comentados</p>
+                </div>
+            </a>
+            <a href="#" class="card">
+                <div class="icon-circle"><i class="fa-solid fa-file-signature"></i></div>
+                <div class="card-text">
+                    <h4>Reportar</h4>
+                    <p>Envía tu información</p>
+                </div>
+            </a>
+            <a href="#search-section" class="card" id="btn-buscador">
+                <div class="icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <div class="card-text">
+                    <h4>Buscador VIP</h4>
+                    <p>Búsqueda avanzada</p>
+                </div>
+            </a>
+            <a href="#" class="card">
+                <div class="icon-circle"><i class="fa-solid fa-map-location-dot"></i></div>
+                <div class="card-text">
+                    <h4>Ubicaciones</h4>
+                    <p>Mapa interactivo</p>
+                </div>
+            </a>
+            <a href="#" class="card">
+                <div class="icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="card-text">
+                    <h4>Privacidad</h4>
+                    <p>Navegación protegida</p>
+                </div>
+            </a>
+            <a href="#" class="card">
+                <div class="icon-circle"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                <div class="card-text">
+                    <h4>Apóyanos</h4>
+                    <p>Necesitamos tu ayuda</p>
+                </div>
+            </a>
+        </div>
+
+        <div id="search-section" class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar historias, palabras clave...">
+            <div class="filters">
+                <select id="cityFilter">
+                    <option value="all">Todas las Ciudades</option>
+                </select>
+                <select id="typeFilter">
+                    <option value="all">Tipos de Infidelidad</option>
+                </select>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="feed-section">Feed de Historias</h2>
+        <main id="feedContainer"></main>
+
+        <a href="#" class="banner-container bottom-banner">
+            <img src="https://via.placeholder.com/1100x180/1E1E23/FDA1CB?text=++AQUI+TU+BANNER+DE+PUBLICIDAD++" alt="Banner Publicidad">
+        </a>
+
+        <div class="info-section">
+            <h3>Infieles EC – El mejor sitio para descubrir la verdad</h3>
+            <p>¿Sabías que miles de personas buscan salir de dudas sobre sus relaciones a diario? La necesidad de saber la verdad es común a nivel nacional y no es de extrañar que hayamos visto un fuerte aumento en la demanda de plataformas seguras y comunidades unidas.</p>
+            <h3>¿Qué es y cómo funciona?</h3>
+            <p>Infieles EC es un portal gratuito que agrupa diversas fuentes de información ciudadana. Puedes disfrutar de una experiencia donde podrás descubrir tendencias, reportes virales y datos generales. Todo diseñado con una interfaz moderna, limpia y rápida para ofrecerte la mejor experiencia sin complicaciones.</p>
+            <h3>¿Es 100% seguro?</h3>
+            <p>Nuestro equipo se esfuerza por mantener una plataforma limpia y 100% segura para nuestros usuarios. Trabajamos constantemente para asegurarnos de que la navegación sea fluida, anónima y libre de interrupciones molestas.</p>
+        </div>
+
+    </div>
+
+    <div id="renoteModal" class="modal hidden">
+        <div class="modal-content">
+            <div id="videoAdContainer">
+                <video id="adVideo" src="assets/videos/anuncio.mp4" muted></video>
+                <div class="ad-options">
+                    <button class="ad-btn" id="btn-opt1">Saber más</button>
+                    <button class="ad-btn" id="btn-opt2">Omitir Anuncio</button>
+                    <button class="ad-btn" id="btn-opt3">Ver Perfil</button>
+                </div>
+            </div>
+
+            <div id="renoteContent" class="hidden">
+                <h3>Respuestas (ReNOTE)</h3>
+                <div id="commentsSection"></div>
+                <textarea placeholder="Escribe tu respuesta de forma anónima..."></textarea>
+                <div class="renote-actions">
+                    <button class="btn-primary">Publicar</button>
+                    <button class="btn-secondary" id="closeModal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/feed.js"></script>
+    <script src="js/filter-search.js"></script>
+    <script src="js/modal-ads.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
