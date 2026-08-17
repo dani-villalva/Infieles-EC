@@ -1,106 +1,267 @@
-:root {
-    --bg-base: #121214;
-    --card-bg: #1B1B1E;
-    --text-main: #FFFFFF;
-    --text-muted: #9E9E9E;
-    --fab-bg: #FF9D5C;
-    --border-color: rgba(255,255,255,0.08);
-    
-    /* Categorías */
-    --c-amor: #FF4D6D;
-    --c-trabajo: #3A86FF;
-    --c-miedos: #8338EC;
-    --c-confesiones: #FFBE0B;
+let appState = {
+    data: {},
+    activeCategory: 'todo',
+    activeCity: 'Todas'
+};
+
+// 1. Inicialización Principal
+async function initApp() {
+    try {
+        const response = await fetch('data/db.json');
+        appState.data = await response.json();
+        
+        renderStories();
+        renderFilters();
+        renderCategoriesModal();
+        applyFilters();
+        setupEventListeners();
+    } catch (error) {
+        console.error("Error cargando db.json:", error);
+    }
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+// 2. Renderizar Historias IG
+function renderStories() {
+    const container = document.getElementById('storiesContainer');
+    container.innerHTML = '';
+    if(appState.data.historias_ig) {
+        appState.data.historias_ig.forEach(story => {
+            container.innerHTML += `
+                <div class="story">
+                    <img src="${story.imagen}" alt="User">
+                    <span>${story.usuario}</span>
+                </div>
+            `;
+        });
+    }
+}
 
-body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; padding-bottom: 100px; }
+// 3. Renderizar Filtros (Pills Superiores)
+function renderFilters() {
+    const catContainer = document.getElementById('categoryFilters');
+    const cityContainer = document.getElementById('cityFilters');
+    
+    // Filtros de Categorías
+    catContainer.innerHTML = '';
+    appState.data.categorias.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = `filter-btn ${appState.activeCategory === cat.id ? 'active' : ''}`;
+        btn.textContent = cat.nombre;
+        if(appState.activeCategory === cat.id && cat.id !== 'todo') {
+            btn.style.backgroundColor = cat.color;
+            btn.style.color = '#fff';
+        }
+        btn.onclick = () => {
+            appState.activeCategory = cat.id;
+            renderFilters();
+            applyFilters();
+        };
+        catContainer.appendChild(btn);
+    });
 
-/* HEADER */
-.app-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
-.h-left, .h-right { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: pointer; }
-.h-center { text-align: center; }
-.h-center h1 { font-size: 1.5rem; letter-spacing: 5px; font-weight: 800; color: #fff; }
-.red-s { color: var(--c-amor); }
-.pro-badge { color: var(--c-amor); font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; }
-.h-right { position: relative; }
-.badge { background: var(--c-amor); color: #fff; font-size: 0.6rem; padding: 2px 5px; border-radius: 10px; position: absolute; top: -5px; right: -10px; }
+    // Filtros de Ciudades
+    cityContainer.innerHTML = '';
+    appState.data.ciudades.forEach(city => {
+        const btn = document.createElement('button');
+        btn.className = `filter-btn ${appState.activeCity === city ? 'active' : ''}`;
+        btn.textContent = city;
+        if(appState.activeCity === city && city !== 'Todas') {
+            btn.style.backgroundColor = '#fff';
+            btn.style.color = '#000';
+        }
+        btn.onclick = () => {
+            appState.activeCity = city;
+            renderFilters();
+            applyFilters();
+        };
+        cityContainer.appendChild(btn);
+    });
+}
 
-/* HISTORIAS IG */
-.stories-container { display: flex; gap: 15px; padding: 15px 20px; overflow-x: auto; border-bottom: 1px solid var(--border-color); }
-.stories-container::-webkit-scrollbar { display: none; }
-.story { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 65px; cursor: pointer; }
-.story img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--c-amor); padding: 2px; }
-.story span { font-size: 0.7rem; color: var(--text-muted); }
+// 4. Lógica de Filtrado y Renderizado del Feed
+function applyFilters() {
+    let filtradas = appState.data.historias;
 
-/* FILTROS HORIZONTALES */
-.filters-scroll { width: 100%; overflow-x: auto; padding: 10px 20px 0; }
-.filters-scroll::-webkit-scrollbar { display: none; }
-.filters-container { display: flex; gap: 10px; width: max-content; }
-.filter-btn { background: #2A2A30; color: var(--text-muted); border: none; padding: 8px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
-.filter-btn.active { background: #404048; color: #fff; }
-/* Colores dinámicos en JS para los filtros activos */
+    if (appState.activeCategory !== 'todo') {
+        filtradas = filtradas.filter(h => h.categoria === appState.activeCategory);
+    }
+    if (appState.activeCity !== 'Todas') {
+        filtradas = filtradas.filter(h => h.ciudad === appState.activeCity);
+    }
 
-/* PREGUNTA DEL DÍA */
-.daily-question { margin: 20px; background: #181516; border: 1px solid var(--c-amor); border-radius: 16px; padding: 20px; }
-.daily-question h4 { color: var(--c-confesiones); font-size: 0.85rem; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-.daily-question h3 { font-size: 1.1rem; margin-bottom: 15px; line-height: 1.4; }
-.daily-question p { color: var(--c-amor); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    renderFeed(filtradas);
+}
 
-/* FEED */
-.feed-container { display: flex; flex-direction: column; gap: 15px; padding: 0 20px; }
-.post-card { background: var(--card-bg); border-radius: 16px; padding: 20px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
-.post-card:active { transform: scale(0.98); }
+function renderFeed(historias) {
+    const feed = document.getElementById('feedContainer');
+    feed.innerHTML = '';
 
-.pc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.badge-cat { padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; color: #fff; }
-.pc-meta { color: var(--text-muted); font-size: 0.75rem; display: flex; align-items: center; gap: 10px; }
-.pc-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
-.pc-body { font-size: 1rem; line-height: 1.5; margin-bottom: 20px; color: #E0E0E0; }
-.pc-footer { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.85rem; }
-.pc-reactions { display: flex; gap: 15px; }
-.pc-reactions span { display: flex; align-items: center; gap: 5px; }
+    if(historias.length === 0){
+        feed.innerHTML = `<p style="text-align:center; color:#9E9E9E; margin-top:20px;">No hay secretos con estos filtros.</p>`;
+        return;
+    }
 
-/* FAB BUTTON */
-.fab-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--fab-bg); color: #000; padding: 16px 24px; border-radius: 30px; font-size: 1rem; font-weight: 700; border: none; z-index: 90; display: flex; gap: 10px; align-items: center; cursor: pointer; box-shadow: 0 10px 20px rgba(255, 157, 92, 0.3); white-space: nowrap; }
+    historias.forEach(h => {
+        const catData = appState.data.categorias.find(c => c.id === h.categoria);
+        const color = catData ? catData.color : '#FFF';
+        const catName = catData ? catData.nombre : h.categoria;
 
-/* MODAL DE ENVÍO */
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-.modal-box { background: #222228; border-radius: 24px; width: 90%; max-width: 400px; padding: 25px; border: 1px solid var(--border-color); }
-.modal-box h3 { font-size: 1.2rem; text-align: center; margin-bottom: 5px; }
-.subtitle { color: var(--text-muted); text-align: center; font-size: 0.85rem; margin-bottom: 20px; }
-.modal-cats { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; }
-.modal-cats::-webkit-scrollbar { display: none; }
-.cat-btn { padding: 8px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+        const post = document.createElement('div');
+        post.className = 'post-card';
+        post.style.background = `linear-gradient(90deg, rgba(${hexToRgb(color)}, 0.05) 0%, #1B1B1E 100%)`;
+        post.style.borderLeft = `3px solid ${color}`;
+        
+        post.onclick = () => openDetail(h, catName, color);
 
-.modal-input { width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 15px; color: #fff; margin-bottom: 10px; font-size: 0.9rem; outline: none; }
-.textarea-wrapper { position: relative; margin-bottom: 15px; }
-.textarea-wrapper textarea { width: 100%; height: 120px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 15px; color: #fff; resize: none; outline: none; font-size: 1rem; }
-.char-count { position: absolute; bottom: 10px; right: 15px; font-size: 0.7rem; color: var(--text-muted); }
-.file-inputs { display: flex; gap: 10px; margin-bottom: 20px; }
-.file-btn { flex: 1; background: #2A2A30; padding: 10px; border-radius: 12px; text-align: center; font-size: 0.85rem; cursor: pointer; color: var(--text-muted); }
-.modal-actions { display: flex; justify-content: space-between; padding: 0 10px; }
-.btn-text { background: none; border: none; color: var(--text-muted); font-weight: 700; font-size: 1rem; cursor: pointer; }
-.highlight { color: #fff; }
+        let titleHtml = h.titulo ? `<div class="pc-title">${h.titulo}</div>` : '';
 
-/* MODAL DE DETALLE */
-.modal-full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-base); z-index: 200; display: flex; flex-direction: column; }
-.detail-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-color); background: var(--bg-base); }
-.detail-header button { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
-.detail-screen { flex: 1; overflow-y: auto; padding-bottom: 80px; }
-.detail-post { margin: 20px; padding: 25px 20px; background: var(--card-bg); border-radius: 20px; }
-.big-reactions { display: flex; gap: 10px; margin-top: 25px; flex-wrap: wrap; }
-.big-reactions span { background: #2A2A30; padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        post.innerHTML = `
+            <div class="pc-header">
+                <span class="badge-cat" style="background:${color};">${catName}</span>
+                <div class="pc-meta">
+                    <span>📍 ${h.ciudad}</span>
+                    <span>${h.fecha}</span>
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </div>
+            </div>
+            ${titleHtml}
+            <div class="pc-body">${h.texto}</div>
+            <div class="pc-footer">
+                <div class="pc-reactions">
+                    <span>🔥 ${h.likes}</span>
+                    <span>😢 ${h.sads}</span>
+                </div>
+                <span><i class="fa-solid fa-comment"></i> ${h.comentarios}</span>
+            </div>
+        `;
+        feed.appendChild(post);
+    });
+}
 
-.comments-section { padding: 0 20px; }
-.comments-section h3 { font-size: 1.1rem; margin-bottom: 15px; }
-.comment-card { border: 1px solid var(--c-confesiones); padding: 15px; border-radius: 16px; margin-bottom: 10px; background: rgba(255, 190, 11, 0.05); }
-.c-head { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
-.c-head span:first-child { color: var(--c-confesiones); font-weight: 700; }
-.comment-input-area { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-base); padding: 15px 20px; display: flex; gap: 10px; border-top: 1px solid var(--border-color); align-items: center; }
-.comment-input-area input { flex: 1; background: #2A2A30; border: none; padding: 12px 20px; border-radius: 20px; color: #fff; outline: none; }
-.btn-icon { background: #2A2A30; border: none; color: #fff; padding: 10px 15px; border-radius: 20px; font-weight: 700; }
-.btn-send { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+// 5. Configurar Modal de Envío de Secreto (Panel de publicación)
+function renderCategoriesModal() {
+    const container = document.getElementById('modalCategorySelector');
+    const inputCat = document.getElementById('selectedCatInput');
+    container.innerHTML = '';
 
-.hidden { display: none !important; }
+    appState.data.categorias.forEach(cat => {
+        if(cat.id === 'todo') return; // Evitar "todo" en las opciones de envío
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'cat-btn';
+        btn.textContent = cat.nombre;
+        btn.onclick = () => {
+            document.querySelectorAll('.cat-btn').forEach(b => { 
+                b.style.background = 'transparent'; 
+                b.style.color = '#9E9E9E'; 
+                b.style.borderColor = 'rgba(255,255,255,0.08)'; 
+            });
+            btn.style.background = cat.color;
+            btn.style.color = '#fff';
+            btn.style.borderColor = cat.color;
+            inputCat.value = cat.id;
+        };
+        container.appendChild(btn);
+    });
+}
+
+// 6. Event Listeners y Simulación de Base de Datos
+function setupEventListeners() {
+    const modalSubmit = document.getElementById('submitModal');
+    
+    // Abrir panel al dar clic al botón flotante
+    document.getElementById('fab-confess').addEventListener('click', () => {
+        modalSubmit.classList.remove('hidden');
+    });
+
+    // Cerrar panel de envío
+    document.getElementById('closeSubmit').addEventListener('click', () => {
+        modalSubmit.classList.add('hidden');
+    });
+
+    // Enviar Secreto (Añadir al Feed)
+    document.getElementById('confessionForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const catId = document.getElementById('selectedCatInput').value;
+        const title = document.getElementById('postTitle').value;
+        const text = document.getElementById('postContent').value;
+        const date = new Date();
+        const fDate = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')} ${date.getDate()}.${date.getMonth()+1}.${date.getFullYear().toString().substr(-2)}`;
+
+        const newPost = {
+            id: Date.now(),
+            categoria: catId,
+            ciudad: appState.activeCity === 'Todas' ? 'Anónimo' : appState.activeCity,
+            titulo: title,
+            texto: text,
+            fecha: fDate,
+            likes: 0, sads: 0, comentarios: 0
+        };
+
+        // Simula base de datos (agrega la historia al inicio)
+        appState.data.historias.unshift(newPost);
+        
+        // Resetear Formulario
+        e.target.reset();
+        document.querySelectorAll('.cat-btn').forEach(b => { 
+            b.style.background = 'transparent'; 
+            b.style.color = '#9E9E9E'; 
+            b.style.borderColor = 'rgba(255,255,255,0.08)'; 
+        });
+        modalSubmit.classList.add('hidden');
+        
+        // Actualizar feed y subir scroll
+        applyFilters();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Cerrar el Detalle del secreto
+    document.getElementById('closeDetail').addEventListener('click', () => {
+        document.getElementById('detailModal').classList.add('hidden');
+    });
+}
+
+// 7. Abrir Detalles del Post (Lectura completa)
+function openDetail(historia, catName, color) {
+    const modal = document.getElementById('detailModal');
+    const content = document.getElementById('detailPostContent');
+    
+    document.getElementById('commentCount').textContent = historia.comentarios;
+
+    let titleHtml = historia.titulo ? `<h3 style="margin-bottom:10px; font-size:1.2rem; color:#fff;">${historia.titulo}</h3>` : '';
+
+    content.innerHTML = `
+        <div class="detail-post" style="border-left: 3px solid ${color};">
+            <div class="pc-header" style="margin-bottom: 20px;">
+                <span class="badge-cat" style="background:${color}; color:#fff;">${catName}</span>
+                <div class="pc-meta">
+                    <span>📍 ${historia.ciudad}</span>
+                    <span>${historia.fecha}</span>
+                </div>
+            </div>
+            ${titleHtml}
+            <div class="pc-body" style="font-size:1.15rem; color:#fff;">${historia.texto}</div>
+            
+            <div class="big-reactions">
+                <span>🔥 ${historia.likes || 0}</span>
+                <span>❤️ ${Math.floor(Math.random() * 50)}</span>
+                <span>😢 ${historia.sads || 0}</span>
+                <span>😂 ${Math.floor(Math.random() * 30)}</span>
+                <span>😱 ${Math.floor(Math.random() * 20)}</span>
+                <span>👀 ${Math.floor(Math.random() * 100)}</span>
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+}
+
+// Convertidor de color para fondos transparentes
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255,255,255';
+}
+
+// Iniciar app al cargar la página
+document.addEventListener('DOMContentLoaded', initApp);
