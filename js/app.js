@@ -3,11 +3,10 @@ let appData = {};
 async function initApp() {
     const response = await fetch('data/db.json');
     appData = await response.json();
-    
     populateSelects();
     renderFeed(appData.historias);
     initFilters();
-    initTVNavigation();
+    initForm();
 }
 
 function populateSelects() {
@@ -29,24 +28,12 @@ function populateSelects() {
     });
 }
 
-function initTVNavigation() {
-    const focusableElements = document.querySelectorAll('.card, .banner-container, input, select');
-    let currentIndex = 0;
-
-    if(window.innerWidth > 900 && focusableElements.length > 0) {
-        focusableElements[0].focus();
-    }
-
-    document.addEventListener('keydown', (e) => {
-        if (['ArrowDown', 'ArrowRight'].includes(e.key)) {
-            currentIndex = (currentIndex + 1) % focusableElements.length;
-            focusableElements[currentIndex].focus();
-            e.preventDefault();
-        } else if (['ArrowUp', 'ArrowLeft'].includes(e.key)) {
-            currentIndex = (currentIndex - 1 + focusableElements.length) % focusableElements.length;
-            focusableElements[currentIndex].focus();
-            e.preventDefault();
-        }
+function initForm() {
+    const form = document.getElementById('confessionForm');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Tu confesión ha sido enviada para revisión anónima. ¡Gracias!');
+        form.reset();
     });
 }
 
