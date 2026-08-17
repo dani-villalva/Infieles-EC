@@ -1,27 +1,40 @@
-function openReNote(historiaId) {
+function openDetail(historia) {
     const modal = document.getElementById('renoteModal');
-    const videoContainer = document.getElementById('videoAdContainer');
-    const renoteContent = document.getElementById('renoteContent');
-    const adVideo = document.getElementById('adVideo');
+    const adScreen = document.getElementById('videoAdContainer');
+    const detailScreen = document.getElementById('renoteContent');
+    const video = document.getElementById('adVideo');
+    const postContent = document.getElementById('detailPostContent');
 
     modal.classList.remove('hidden');
-    videoContainer.classList.remove('hidden');
-    renoteContent.classList.add('hidden');
+    adScreen.classList.remove('hidden');
+    detailScreen.classList.add('hidden');
+    video.play().catch(()=>{});
 
-    adVideo.play().catch(e => console.log("Auto-play prevenido por el navegador"));
+    let imgHtml = historia.imagen ? `<img src="${historia.imagen}" class="sc-img" style="margin-top:15px;">` : '';
 
-    document.getElementById('btn-opt1').onclick = () => window.open('https://google.com', '_blank');
-    
+    postContent.innerHTML = `
+        <div class="sc-header">
+            <span class="sc-badge" style="background:#FFCD00; color:#000;">${historia.tipo}</span>
+            <div class="sc-meta">${historia.fecha}</div>
+        </div>
+        <div class="sc-body" style="font-size:1.15rem;">${historia.texto}</div>
+        ${imgHtml}
+        <div class="big-reactions">
+            <span>🔥 ${historia.likes}</span>
+            <span>😢 ${historia.sads}</span>
+            <span>😂 0</span>
+        </div>
+    `;
+
+    document.getElementById('commentCount').textContent = historia.comentarios;
+
     document.getElementById('btn-opt2').onclick = () => {
-        videoContainer.classList.add('hidden');
-        adVideo.pause();
-        renoteContent.classList.remove('hidden');
+        video.pause();
+        adScreen.classList.add('hidden');
+        detailScreen.classList.remove('hidden');
     };
 
-    document.getElementById('btn-opt3').onclick = () => alert("Abriendo perfil del anunciante...");
-
-    document.getElementById('closeModal').onclick = () => {
+    document.getElementById('closeDetail').onclick = () => {
         modal.classList.add('hidden');
-        adVideo.pause();
     };
 }
