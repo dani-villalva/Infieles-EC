@@ -1,46 +1,42 @@
 {
-  "ciudades": ["Quito", "Guayaquil", "Cuenca", "Manta", "Loja"],
-  "tipos": ["Virtual", "Física", "Emocional", "Con el/la Ex", "Doble Vida"],
+  "ciudades": ["Todas", "Quito", "Guayaquil", "Cuenca", "Manta"],
+  "tipos": ["Todos", "Virtual", "Física", "Emocional", "Con el/la Ex"],
   "historias": [
     { 
       "id": 1, 
       "ciudad": "Quito", 
       "tipo": "Física", 
-      "texto": "Me dijo que tenía turno de noche, lo vi en la Orellana.", 
-      "imagen": "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=500&q=80", 
-      "autor": "Anon1", 
-      "avatar": "https://ui-avatars.com/api/?name=A1&background=FDA1CB&color=fff",
-      "likes": 342
+      "texto": "Me dijo que se había quedado trabajando. En realidad estaba en el coche, frente a casa, llorando hora y media.", 
+      "imagen": "", 
+      "autor": "Anónimo", 
+      "fecha": "16:30 08.08.23",
+      "likes": 63,
+      "sads": 28,
+      "comentarios": 34
     },
     { 
       "id": 2, 
       "ciudad": "Guayaquil", 
       "tipo": "Virtual", 
-      "texto": "Chat archivado en WhatsApp con 'Juan Mecánico'.", 
-      "imagen": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&q=80", 
-      "autor": "Anon2", 
-      "avatar": "https://ui-avatars.com/api/?name=A2&background=FDA1CB&color=fff",
-      "likes": 890
+      "texto": "Todavía guardo su camiseta. Han pasado tres años y la saco solo para recordar a qué olía la calma.", 
+      "imagen": "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=500&q=80", 
+      "autor": "Anónimo", 
+      "fecha": "18:51 08.08.23",
+      "likes": 24,
+      "sads": 0,
+      "comentarios": 8
     },
     { 
       "id": 3, 
       "ciudad": "Cuenca", 
-      "tipo": "Doble Vida", 
-      "texto": "Descubrí que tiene otra familia en Azogues.", 
-      "imagen": "https://images.unsplash.com/photo-1520699049698-acd2fce18736?w=500&q=80", 
-      "autor": "Anon3", 
-      "avatar": "https://ui-avatars.com/api/?name=A3&background=FDA1CB&color=fff",
-      "likes": 124
-    },
-    { 
-      "id": 4, 
-      "ciudad": "Manta", 
-      "tipo": "Con el/la Ex", 
-      "texto": "Encontré reservas a Galápagos para dos.", 
-      "imagen": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=500&q=80", 
-      "autor": "Anon4", 
-      "avatar": "https://ui-avatars.com/api/?name=A4&background=FDA1CB&color=fff",
-      "likes": 56
+      "tipo": "Trabajo", 
+      "texto": "Mi jefe me elogia delante de todos. Ayer vi la lista de ascensos: mi nombre estaba tachado con su letra.", 
+      "imagen": "", 
+      "autor": "Anónimo", 
+      "fecha": "18:18 08.08.23",
+      "likes": 6,
+      "sads": 31,
+      "comentarios": 12
     }
   ]
 }
