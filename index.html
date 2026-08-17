@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infieles EC</title>
+    <title>Infieles EC - Descubre la verdad</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -30,7 +30,7 @@
                     <p>Los más comentados</p>
                 </div>
             </a>
-            <a href="#submit-section" class="card">
+            <a href="#" class="card" id="btn-open-submit">
                 <div class="icon-circle"><i class="fa-solid fa-file-signature"></i></div>
                 <div class="card-text">
                     <h4>Reportar</h4>
@@ -67,76 +67,89 @@
             </a>
         </div>
 
-        <div id="submit-section" class="submit-panel">
-            <h2 class="section-title">Envía tu Confesión</h2>
-            <form id="confessionForm" class="confession-form">
-                <textarea placeholder="Escribe tu historia aquí de forma 100% anónima..." required></textarea>
-                <div class="file-inputs">
-                    <label class="file-btn">
-                        <i class="fa-solid fa-image"></i> Subir Imagen
-                        <input type="file" accept="image/*" hidden>
-                    </label>
-                    <label class="file-btn">
-                        <i class="fa-solid fa-microphone"></i> Subir Audio
-                        <input type="file" accept="audio/*" hidden>
-                    </label>
-                </div>
-                <button type="submit" class="submit-btn">Publicar Confesión</button>
-            </form>
-        </div>
-
         <div id="search-section" class="search-container">
             <input type="text" id="searchInput" placeholder="Buscar historias, palabras clave...">
-            <div class="filters">
-                <select id="cityFilter"><option value="all">Todas las Ciudades</option></select>
-                <select id="typeFilter"><option value="all">Tipos de Infidelidad</option></select>
-            </div>
+            <div class="tags-container" id="typeFilters"></div>
+            <div class="tags-container" id="cityFilters"></div>
         </div>
 
-        <h2 class="section-title">Últimas Historias</h2>
         <main id="feedContainer"></main>
 
         <a href="#" class="banner-container bottom-banner">
             <img src="https://via.placeholder.com/1100x180/1E1E23/FDA1CB?text=++AQUI+TU+BANNER+DE+PUBLICIDAD++" alt="Banner Publicidad">
         </a>
-
-        <div class="info-section">
-            <h3>Infieles EC – El mejor sitio para descubrir la verdad</h3>
-            <p>¿Sabías que miles de personas buscan salir de dudas sobre sus relaciones a diario? La necesidad de saber la verdad es común a nivel nacional y no es de extrañar que hayamos visto un fuerte aumento en la demanda de plataformas seguras y comunidades unidas.</p>
-            <h3>¿Qué es y cómo funciona?</h3>
-            <p>Infieles EC es un portal gratuito que agrupa diversas fuentes de información ciudadana. Puedes disfrutar de una experiencia donde podrás descubrir tendencias, reportes virales y datos generales. Todo diseñado con una interfaz moderna, limpia y rápida para ofrecerte la mejor experiencia sin complicaciones.</p>
-            <h3>¿Es 100% seguro?</h3>
-            <p>Nuestro equipo se esfuerza por mantener una plataforma limpia y 100% segura para nuestros usuarios. Trabajamos constantemente para asegurarnos de que la navegación sea fluida, anónima y libre de interrupciones molestas.</p>
-        </div>
-
     </div>
 
-    <div id="renoteModal" class="modal hidden">
-        <div class="modal-content">
-            <div id="videoAdContainer">
-                <video id="adVideo" src="assets/videos/anuncio.mp4" muted></video>
-                <div class="ad-options">
-                    <button class="ad-btn" id="btn-opt1">Saber más</button>
-                    <button class="ad-btn" id="btn-opt2">Omitir Anuncio</button>
-                    <button class="ad-btn" id="btn-opt3">Ver Perfil</button>
-                </div>
-            </div>
+    <button id="fab-confess" class="fab-btn">
+        <i class="fa-solid fa-plus"></i> Envía tu confesión
+    </button>
 
-            <div id="renoteContent" class="hidden">
-                <h3>ReNOTE</h3>
-                <div id="commentsSection"></div>
-                <textarea placeholder="Escribe tu respuesta..."></textarea>
-                <div class="renote-actions">
-                    <button class="btn-primary">Publicar</button>
-                    <button class="btn-secondary" id="closeModal">Cerrar</button>
+    <div id="submitModal" class="modal hidden">
+        <div class="modal-box">
+            <h3>¿Listo para compartir tu secreto?</h3>
+            <p class="subtitle">Es completamente anónimo.</p>
+            <form id="confessionForm">
+                <div class="tags-container" style="margin-bottom: 15px;" id="modalTags">
+                    <button type="button" class="tag active">Amor</button>
+                    <button type="button" class="tag">Trabajo</button>
+                    <button type="button" class="tag">Miedos</button>
                 </div>
-            </div>
+                <textarea placeholder="Secreto" required></textarea>
+                <div class="file-inputs">
+                    <label class="file-btn"><i class="fa-solid fa-image"></i> Imagen <input type="file" hidden></label>
+                    <label class="file-btn"><i class="fa-solid fa-microphone"></i> Audio <input type="file" hidden></label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-text" id="closeSubmit">Cancelar</button>
+                    <button type="submit" class="btn-text" style="color: var(--accent);">Compartir</button>
+                </div>
+            </form>
         </div>
     </div>
 
+    <div id="renoteModal" class="modal-full hidden">
+        <div id="videoAdContainer" class="ad-screen">
+            <video id="adVideo" src="assets/videos/anuncio.mp4" muted></video>
+            <div class="ad-overlay">
+                <p>Publicidad</p>
+                <button class="ad-btn" id="btn-opt2">Omitir en 5s</button>
+                <div class="ad-links">
+                    <button id="btn-opt1">Saber más</button>
+                    <button id="btn-opt3">Ver Perfil</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="renoteContent" class="detail-screen hidden">
+            <div class="detail-header">
+                <button id="closeDetail"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>S E C R E T</h2>
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+            
+            <div class="detail-post" id="detailPostContent"></div>
+
+            <div class="comments-section">
+                <h3>Comentarios <span id="commentCount">3</span></h3>
+                <div id="commentsList">
+                    <div class="comment-card">
+                        <div class="c-head"><span><i class="fa-regular fa-gem" style="color:#00e5ff"></i> Anónimo</span> <span>17:06 08.08.23</span></div>
+                        <p>Yo estuve cuatro años en ese mismo coche. La noche más difícil y más acertada.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment-input-area">
+                <button class="btn-icon"><i class="fa-regular fa-gem"></i> 0</button>
+                <input type="text" placeholder="Escribe un comentario...">
+                <button class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
     <script src="js/feed.js"></script>
     <script src="js/filter-search.js"></script>
     <script src="js/modal-ads.js"></script>
-    <script src="js/app.js"></script>
 </body>
 </html>
