@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Confesiones ---
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if
+        request.resource.data.texto is string &&
+        request.resource.data.texto.size() > 0 &&
+        request.resource.data.texto.size() < 2000 &&
+        request.resource.data.ciudad is string &&
+        request.resource.data.categoria is string;
+      // Solo se permite actualizar contadores (likes/sads/comentariosCount),
+      // nunca reescribir el contenido de la confesión desde el cliente.
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['likes', 'sads', 'comentariosCount']);
+      allow delete: if false;
+    }
+
+    // --- Comentarios ---
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if
+        request.resource.data.texto is string &&
+        request.resource.data.texto.size() > 0 &&
+        request.resource.data.texto.size() < 500 &&
+        request.resource.data.postId is string;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

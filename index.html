@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infieles EC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Header Principal -->
+    <header class="app-header">
+        <div class="h-left"><i class="fa-solid fa-earth-americas"></i> Global</div>
+        <div class="h-center">
+            <h1>Infieles <span class="accent-text">EC</span></h1>
+            <p class="pro-badge">PRO</p>
+        </div>
+        <div class="h-right">
+            <button id="notifBell" class="icon-btn">
+                <i class="fa-solid fa-bell"></i>
+                <span id="notifBadge" class="badge hidden">0</span>
+            </button>
+
+            <!-- Panel desplegable de notificaciones -->
+            <div id="notifPanel" class="notif-panel hidden">
+                <h4>Notificaciones</h4>
+                <div id="notifList"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toasts de contenido nuevo -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Historias estilo Instagram -->
+    <div class="stories-container" id="storiesContainer"></div>
+
+    <!-- Filtros -->
+    <div class="filters-scroll">
+        <div class="filters-container" id="categoryFilters"></div>
+    </div>
+    <div class="filters-scroll" style="margin-top: 5px;">
+        <div class="filters-container" id="cityFilters"></div>
+    </div>
+
+    <!-- Pregunta del día -->
+    <div class="daily-question">
+        <h4>💡 Pregunta del día</h4>
+        <h3>¿Qué mentira te dices más a menudo?</h3>
+        <p>Cuenta el tuyo &rarr;</p>
+    </div>
+
+    <!-- Feed Principal -->
+    <main id="feedContainer" class="feed-container"></main>
+
+    <!-- Botón Flotante (FAB) -->
+    <button id="fab-confess" class="fab-btn">
+        <i class="fa-solid fa-plus"></i> Cuéntame tu secreto
+    </button>
+
+    <!-- VISOR DE HISTORIAS IG -->
+    <div id="storyViewer" class="modal-full hidden">
+        <div class="story-progress"><div id="storyProgressBar"></div></div>
+        <button id="closeStoryViewer" class="btn-close-story"><i class="fa-solid fa-xmark"></i></button>
+        <img id="storyImageFull" src="" alt="Historia">
+    </div>
+
+    <!-- PANEL DE PUBLICACIÓN (independiente del feed) -->
+    <div id="submitModal" class="modal hidden">
+        <div class="modal-box">
+            <h3>¿Listo para compartir tu secreto?</h3>
+            <p class="subtitle">Es completamente anónimo.</p>
+
+            <form id="confessionForm">
+                <div class="modal-cats" id="modalCategorySelector"></div>
+                <input type="hidden" id="selectedCatInput" value="confesiones">
+
+                <select id="postCity" class="modal-input" required>
+                    <option value="" disabled selected>Selecciona tu ciudad...</option>
+                </select>
+
+                <input type="text" id="postTitle" placeholder="Añade un título (Opcional)" class="modal-input">
+                <input type="text" id="postKeywords" placeholder="Palabras clave (ej: jefe, tóxica, dinero)" class="modal-input">
+
+                <div class="textarea-wrapper">
+                    <textarea id="postContent" placeholder="Secreto" required></textarea>
+                </div>
+
+                <div class="file-inputs">
+                    <label class="file-btn"><i class="fa-solid fa-image"></i> Imagen <input type="file" hidden></label>
+                    <label class="file-btn"><i class="fa-solid fa-microphone"></i> Audio <input type="file" hidden></label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-text" id="closeSubmit">Cancelar</button>
+                    <button type="submit" class="btn-text highlight">Compartir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- VISTA DE DETALLES Y COMENTARIOS -->
+    <div id="detailModal" class="modal-full hidden">
+        <div class="detail-header">
+            <button id="closeDetail"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="h-center">
+                <h1 style="font-size:1.2rem;">Infieles <span class="accent-text">EC</span></h1>
+            </div>
+            <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
+        </div>
+
+        <div class="detail-screen">
+            <div id="detailPostContent"></div>
+
+            <div class="comments-section">
+                <h3>Comentarios <span id="commentCount">0</span></h3>
+                <div id="commentsList"></div>
+            </div>
+        </div>
+
+        <div class="comment-input-area">
+            <input type="text" id="newCommentInput" placeholder="Escribe un comentario anónimo...">
+            <button class="btn-send" id="sendCommentBtn"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
