@@ -1,11 +1,46 @@
 {
-  "ciudades": ["Quito", "Guayaquil", "Cuenca", "Santo Domingo", "Machala", "Durán", "Manta", "Portoviejo", "Loja", "Ambato", "Esmeraldas", "Riobamba"],
+  "ciudades": ["Quito", "Guayaquil", "Cuenca", "Manta", "Loja"],
   "tipos": ["Virtual", "Física", "Emocional", "Con el/la Ex", "Doble Vida"],
   "historias": [
-    { "id": 1, "ciudad": "Quito", "tipo": "Física", "texto": "Me dijo que tenía turno de noche en el hospital, y lo vi salir de un hotel en la Orellana.", "autor": "Anon1" },
-    { "id": 2, "ciudad": "Guayaquil", "tipo": "Virtual", "texto": "Dejó el celular desbloqueado. Tenía un chat archivado en WhatsApp con 'Juan Mecánico'.", "autor": "Anon2" },
-    { "id": 3, "ciudad": "Cuenca", "tipo": "Doble Vida", "texto": "Descubrí que tiene otra familia en Azogues.", "autor": "Anon3" },
-    { "id": 4, "ciudad": "Manta", "tipo": "Con el/la Ex", "texto": "Me juró que no hablaba con ella, pero encontré sus reservas de vuelo a Galápagos.", "autor": "Anon4" },
-    { "id": 5, "ciudad": "Loja", "tipo": "Emocional", "texto": "No hay contacto físico, pero le escribe poemas a su compañera de trabajo.", "autor": "Anon5" }
+    { 
+      "id": 1, 
+      "ciudad": "Quito", 
+      "tipo": "Física", 
+      "texto": "Me dijo que tenía turno de noche, lo vi en la Orellana.", 
+      "imagen": "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=500&q=80", 
+      "autor": "Anon1", 
+      "avatar": "https://ui-avatars.com/api/?name=A1&background=FDA1CB&color=fff",
+      "likes": 342
+    },
+    { 
+      "id": 2, 
+      "ciudad": "Guayaquil", 
+      "tipo": "Virtual", 
+      "texto": "Chat archivado en WhatsApp con 'Juan Mecánico'.", 
+      "imagen": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&q=80", 
+      "autor": "Anon2", 
+      "avatar": "https://ui-avatars.com/api/?name=A2&background=FDA1CB&color=fff",
+      "likes": 890
+    },
+    { 
+      "id": 3, 
+      "ciudad": "Cuenca", 
+      "tipo": "Doble Vida", 
+      "texto": "Descubrí que tiene otra familia en Azogues.", 
+      "imagen": "https://images.unsplash.com/photo-1520699049698-acd2fce18736?w=500&q=80", 
+      "autor": "Anon3", 
+      "avatar": "https://ui-avatars.com/api/?name=A3&background=FDA1CB&color=fff",
+      "likes": 124
+    },
+    { 
+      "id": 4, 
+      "ciudad": "Manta", 
+      "tipo": "Con el/la Ex", 
+      "texto": "Encontré reservas a Galápagos para dos.", 
+      "imagen": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=500&q=80", 
+      "autor": "Anon4", 
+      "avatar": "https://ui-avatars.com/api/?name=A4&background=FDA1CB&color=fff",
+      "likes": 56
+    }
   ]
 }
