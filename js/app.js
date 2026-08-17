@@ -1,10 +1,11 @@
 let appState = {
     data: {},
     activeCategory: 'todo',
-    activeCity: 'Todas'
+    activeCity: 'Todas',
+    storyTimer: null
 };
 
-// 1. Inicialización Principal
+// 1. Inicialización
 async function initApp() {
     try {
         const response = await fetch('data/db.json');
@@ -13,6 +14,7 @@ async function initApp() {
         renderStories();
         renderFilters();
         renderCategoriesModal();
+        populateCitySelect();
         applyFilters();
         setupEventListeners();
     } catch (error) {
@@ -20,37 +22,60 @@ async function initApp() {
     }
 }
 
-// 2. Renderizar Historias IG
+// 2. Historias estilo Instagram Funcionales
 function renderStories() {
     const container = document.getElementById('storiesContainer');
     container.innerHTML = '';
-    if(appState.data.historias_ig) {
-        appState.data.historias_ig.forEach(story => {
-            container.innerHTML += `
-                <div class="story">
-                    <img src="${story.imagen}" alt="User">
-                    <span>${story.usuario}</span>
-                </div>
-            `;
-        });
-    }
+    appState.data.historias_ig.forEach(story => {
+        const div = document.createElement('div');
+        div.className = 'story';
+        div.innerHTML = `<img src="${story.imagen}" alt="User"><span>${story.usuario}</span>`;
+        
+        // Al tocar la historia, la abre en pantalla completa
+        div.onclick = () => openStoryViewer(story.imagen);
+        
+        container.appendChild(div);
+    });
 }
 
-// 3. Renderizar Filtros (Pills Superiores)
+function openStoryViewer(imageUrl) {
+    const viewer = document.getElementById('storyViewer');
+    const img = document.getElementById('storyImageFull');
+    const bar = document.getElementById('storyProgressBar');
+    
+    img.src = imageUrl;
+    viewer.classList.remove('hidden');
+    
+    // Animación de la barra superior de IG
+    let progress = 0;
+    bar.style.width = '0%';
+    clearInterval(appState.storyTimer);
+    
+    appState.storyTimer = setInterval(() => {
+        progress += 2; // Sube 2% cada 100ms (Total 5 segundos)
+        bar.style.width = `${progress}%`;
+        
+        if(progress >= 100) {
+            closeStory();
+        }
+    }, 100);
+}
+
+function closeStory() {
+    document.getElementById('storyViewer').classList.add('hidden');
+    clearInterval(appState.storyTimer);
+}
+
+// 3. Filtros Superiores
 function renderFilters() {
     const catContainer = document.getElementById('categoryFilters');
     const cityContainer = document.getElementById('cityFilters');
     
-    // Filtros de Categorías
     catContainer.innerHTML = '';
     appState.data.categorias.forEach(cat => {
         const btn = document.createElement('button');
         btn.className = `filter-btn ${appState.activeCategory === cat.id ? 'active' : ''}`;
         btn.textContent = cat.nombre;
-        if(appState.activeCategory === cat.id && cat.id !== 'todo') {
-            btn.style.backgroundColor = cat.color;
-            btn.style.color = '#fff';
-        }
         btn.onclick = () => {
             appState.activeCategory = cat.id;
             renderFilters();
@@ -59,16 +84,11 @@ function renderFilters() {
         catContainer.appendChild(btn);
     });
 
-    // Filtros de Ciudades
     cityContainer.innerHTML = '';
     appState.data.ciudades.forEach(city => {
         const btn = document.createElement('button');
         btn.className = `filter-btn ${appState.activeCity === city ? 'active' : ''}`;
         btn.textContent = city;
-        if(appState.activeCity === city && city !== 'Todas') {
-            btn.style.backgroundColor = '#fff';
-            btn.style.color = '#000';
-        }
         btn.onclick = () => {
             appState.activeCity = city;
             renderFilters();
@@ -78,17 +98,23 @@ function renderFilters() {
     });
 }
 
-// 4. Lógica de Filtrado y Renderizado del Feed
+// 4. Poblar Selector de Ciudad del Formulario
+function populateCitySelect() {
+    const select = document.getElementById('postCity');
+    appState.data.ciudades.forEach(city => {
+        if(city === "Todas") return; // No permitir publicar en "Todas"
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        select.appendChild(option);
+    });
+}
+
+// 5. Feed de publicaciones
 function applyFilters() {
     let filtradas = appState.data.historias;
-
-    if (appState.activeCategory !== 'todo') {
-        filtradas = filtradas.filter(h => h.categoria === appState.activeCategory);
-    }
-    if (appState.activeCity !== 'Todas') {
-        filtradas = filtradas.filter(h => h.ciudad === appState.activeCity);
-    }
-
+    if (appState.activeCategory !== 'todo') filtradas = filtradas.filter(h => h.categoria === appState.activeCategory);
+    if (appState.activeCity !== 'Todas') filtradas = filtradas.filter(h => h.ciudad === appState.activeCity);
     renderFeed(filtradas);
 }
 
@@ -97,55 +123,44 @@ function renderFeed(historias) {
     feed.innerHTML = '';
 
     if(historias.length === 0){
-        feed.innerHTML = `<p style="text-align:center; color:#9E9E9E; margin-top:20px;">No hay secretos con estos filtros.</p>`;
+        feed.innerHTML = `<p style="text-align:center; color:#D1D5DB;">No hay secretos con estos filtros.</p>`;
         return;
     }
 
     historias.forEach(h => {
         const catData = appState.data.categorias.find(c => c.id === h.categoria);
-        const color = catData ? catData.color : '#FFF';
         const catName = catData ? catData.nombre : h.categoria;
+        const color = catData ? catData.color : '#FDA1CB';
 
         const post = document.createElement('div');
         post.className = 'post-card';
-        post.style.background = `linear-gradient(90deg, rgba(${hexToRgb(color)}, 0.05) 0%, #1B1B1E 100%)`;
-        post.style.borderLeft = `3px solid ${color}`;
-        
         post.onclick = () => openDetail(h, catName, color);
 
         let titleHtml = h.titulo ? `<div class="pc-title">${h.titulo}</div>` : '';
 
         post.innerHTML = `
             <div class="pc-header">
-                <span class="badge-cat" style="background:${color};">${catName}</span>
-                <div class="pc-meta">
-                    <span>📍 ${h.ciudad}</span>
-                    <span>${h.fecha}</span>
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                </div>
+                <span class="badge-cat" style="background:${color}; color:#000;">${catName}</span>
+                <div class="pc-meta">📍 ${h.ciudad} &nbsp;&nbsp; ${h.fecha}</div>
             </div>
             ${titleHtml}
             <div class="pc-body">${h.texto}</div>
             <div class="pc-footer">
-                <div class="pc-reactions">
-                    <span>🔥 ${h.likes}</span>
-                    <span>😢 ${h.sads}</span>
-                </div>
-                <span><i class="fa-solid fa-comment"></i> ${h.comentarios}</span>
+                <span>🔥 ${h.likes}</span>
+                <span>💬 ${h.comentarios}</span>
             </div>
         `;
         feed.appendChild(post);
     });
 }
 
-// 5. Configurar Modal de Envío de Secreto (Panel de publicación)
+// 6. Modal Categorías del Formulario
 function renderCategoriesModal() {
     const container = document.getElementById('modalCategorySelector');
     const inputCat = document.getElementById('selectedCatInput');
-    container.innerHTML = '';
 
     appState.data.categorias.forEach(cat => {
-        if(cat.id === 'todo') return; // Evitar "todo" en las opciones de envío
+        if(cat.id === 'todo') return; 
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'cat-btn';
@@ -153,11 +168,11 @@ function renderCategoriesModal() {
         btn.onclick = () => {
             document.querySelectorAll('.cat-btn').forEach(b => { 
                 b.style.background = 'transparent'; 
-                b.style.color = '#9E9E9E'; 
-                b.style.borderColor = 'rgba(255,255,255,0.08)'; 
+                b.style.color = '#fff'; 
+                b.style.borderColor = 'rgba(255,255,255,0.1)'; 
             });
             btn.style.background = cat.color;
-            btn.style.color = '#fff';
+            btn.style.color = '#000';
             btn.style.borderColor = cat.color;
             inputCat.value = cat.id;
         };
@@ -165,67 +180,83 @@ function renderCategoriesModal() {
     });
 }
 
-// 6. Event Listeners y Simulación de Base de Datos
+// 7. Eventos, Simulador de BD y Comentarios
 function setupEventListeners() {
     const modalSubmit = document.getElementById('submitModal');
     
-    // Abrir panel al dar clic al botón flotante
+    // Abrir Formulario
     document.getElementById('fab-confess').addEventListener('click', () => {
         modalSubmit.classList.remove('hidden');
     });
 
-    // Cerrar panel de envío
+    // Cerrar Formulario
     document.getElementById('closeSubmit').addEventListener('click', () => {
         modalSubmit.classList.add('hidden');
     });
 
-    // Enviar Secreto (Añadir al Feed)
+    // Enviar Secreto
     document.getElementById('confessionForm').addEventListener('submit', (e) => {
         e.preventDefault();
         
         const catId = document.getElementById('selectedCatInput').value;
+        const city = document.getElementById('postCity').value; // Toma la ciudad seleccionada
         const title = document.getElementById('postTitle').value;
         const text = document.getElementById('postContent').value;
         const date = new Date();
-        const fDate = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')} ${date.getDate()}.${date.getMonth()+1}.${date.getFullYear().toString().substr(-2)}`;
+        const fDate = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
 
         const newPost = {
             id: Date.now(),
             categoria: catId,
-            ciudad: appState.activeCity === 'Todas' ? 'Anónimo' : appState.activeCity,
+            ciudad: city,
             titulo: title,
             texto: text,
             fecha: fDate,
             likes: 0, sads: 0, comentarios: 0
         };
 
-        // Simula base de datos (agrega la historia al inicio)
         appState.data.historias.unshift(newPost);
-        
-        // Resetear Formulario
         e.target.reset();
-        document.querySelectorAll('.cat-btn').forEach(b => { 
-            b.style.background = 'transparent'; 
-            b.style.color = '#9E9E9E'; 
-            b.style.borderColor = 'rgba(255,255,255,0.08)'; 
-        });
         modalSubmit.classList.add('hidden');
-        
-        // Actualizar feed y subir scroll
         applyFilters();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Cerrar el Detalle del secreto
+    // Cerrar Detalle Post
     document.getElementById('closeDetail').addEventListener('click', () => {
         document.getElementById('detailModal').classList.add('hidden');
     });
+
+    // Cerrar Historia IG
+    document.getElementById('closeStoryViewer').addEventListener('click', closeStory);
+
+    // Enviar Comentario (Simulador en Tiempo Real)
+    document.getElementById('sendCommentBtn').addEventListener('click', () => {
+        const input = document.getElementById('newCommentInput');
+        const list = document.getElementById('commentsList');
+        
+        if(input.value.trim() !== '') {
+            const div = document.createElement('div');
+            div.className = 'comment-card';
+            div.innerHTML = `
+                <div class="c-head"><span>Anónimo</span> <span>Ahora</span></div>
+                <p>${input.value}</p>
+            `;
+            list.prepend(div); // Lo pone de primero al instante
+            input.value = '';
+            
+            // Sube el contador
+            const countElem = document.getElementById('commentCount');
+            countElem.textContent = parseInt(countElem.textContent) + 1;
+        }
+    });
 }
 
-// 7. Abrir Detalles del Post (Lectura completa)
+// 8. Abrir Detalles del Post
 function openDetail(historia, catName, color) {
     const modal = document.getElementById('detailModal');
     const content = document.getElementById('detailPostContent');
+    const list = document.getElementById('commentsList');
     
     document.getElementById('commentCount').textContent = historia.comentarios;
 
@@ -234,34 +265,24 @@ function openDetail(historia, catName, color) {
     content.innerHTML = `
         <div class="detail-post" style="border-left: 3px solid ${color};">
             <div class="pc-header" style="margin-bottom: 20px;">
-                <span class="badge-cat" style="background:${color}; color:#fff;">${catName}</span>
-                <div class="pc-meta">
-                    <span>📍 ${historia.ciudad}</span>
-                    <span>${historia.fecha}</span>
-                </div>
+                <span class="badge-cat" style="background:${color}; color:#000;">${catName}</span>
+                <div class="pc-meta">📍 ${historia.ciudad} &nbsp;|&nbsp; ${historia.fecha}</div>
             </div>
             ${titleHtml}
             <div class="pc-body" style="font-size:1.15rem; color:#fff;">${historia.texto}</div>
-            
-            <div class="big-reactions">
-                <span>🔥 ${historia.likes || 0}</span>
-                <span>❤️ ${Math.floor(Math.random() * 50)}</span>
-                <span>😢 ${historia.sads || 0}</span>
-                <span>😂 ${Math.floor(Math.random() * 30)}</span>
-                <span>😱 ${Math.floor(Math.random() * 20)}</span>
-                <span>👀 ${Math.floor(Math.random() * 100)}</span>
-            </div>
+        </div>
+    `;
+
+    // Resetea los comentarios cada vez que abres uno
+    list.innerHTML = `
+        <div class="comment-card">
+            <div class="c-head"><span>Anónimo</span> <span>Ayer</span></div>
+            <p>Esa historia me suena conocida... fuerza.</p>
         </div>
     `;
 
     modal.classList.remove('hidden');
 }
 
-// Convertidor de color para fondos transparentes
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255,255,255';
-}
-
-// Iniciar app al cargar la página
+// Iniciar app
 document.addEventListener('DOMContentLoaded', initApp);
