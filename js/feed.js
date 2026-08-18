@@ -1,7 +1,5 @@
 // ==========================================================
 // FEED: historias IG, filtros y listado principal de confesiones.
-// Todo lo que es "parte inicial" (lo que se ve al entrar) vive aquí,
-// separado del panel de publicar (submit.js) y de comentarios (comments.js).
 // ==========================================================
 import { db } from './firebase-init.js';
 import {
@@ -10,7 +8,6 @@ import {
 import { appState } from './state.js';
 import { openDetail } from './comments.js';
 
-// --- Historias estilo Instagram (avatares, contenido estático) ---
 export function renderStories() {
     const container = document.getElementById('storiesContainer');
     container.innerHTML = '';
@@ -47,7 +44,6 @@ export function closeStory() {
     clearInterval(appState.storyTimer);
 }
 
-// --- Filtros de categoría y ciudad ---
 export function renderFilters() {
     const catContainer = document.getElementById('categoryFilters');
     const cityContainer = document.getElementById('cityFilters');
@@ -79,7 +75,6 @@ export function renderFilters() {
     });
 }
 
-// --- Suscripción en tiempo real a Firestore (colección "posts") ---
 export function initFeed() {
     const feed = document.getElementById('feedContainer');
     feed.innerHTML = `<p style="text-align:center; color:#D1D5DB;">Cargando confesiones...</p>`;
@@ -121,43 +116,43 @@ function renderFeed(historias) {
         return;
     }
 
-    // Dentro de tu renderFeed() en feed.js:
-historias.forEach(h => {
-    // ... [código de catName y color] ...
+    historias.forEach(h => {
+        const catData = appState.staticData.categorias.find(c => c.id === h.categoria);
+        const catName = catData ? catData.nombre : h.categoria;
+        const color = catData ? catData.color : '#FDA1CB';
 
-    const post = document.createElement('div');
-    post.className = 'post-card';
-    post.onclick = () => openDetail(h.id);
+        const post = document.createElement('div');
+        post.className = 'post-card';
+        post.onclick = () => openDetail(h.id);
 
-    let titleHtml = h.titulo ? `<div class="pc-title">${h.titulo}</div>` : '';
-    
-    // Generar HTML para multimedia si existen en la base de datos
-    let mediaHtml = '';
-    if (h.imagen) {
-        mediaHtml += `<img src="${h.imagen}" style="width: 100%; border-radius: 12px; margin-top: 15px; object-fit: cover;" alt="Imagen adjunta">`;
-    }
-    if (h.audio) {
-        // Detener la propagación para que al hacer clic en 'play' no se abra el post
-        mediaHtml += `<div style="margin-top: 15px;" onclick="event.stopPropagation()">
-            <audio controls src="${h.audio}" style="width: 100%; height: 40px;"></audio>
-        </div>`;
-    }
+        let titleHtml = h.titulo ? `<div class="pc-title">${h.titulo}</div>` : '';
 
-    post.innerHTML = `
-        <div class="pc-header">
-            <span class="badge-cat" style="background:${color}; color:#000;">${catName}</span>
-            <div class="pc-meta">📍 ${h.ciudad} &nbsp;&nbsp; ${formatFecha(h.fecha)}</div>
-        </div>
-        ${titleHtml}
-        <div class="pc-body">
-            ${h.texto}
-            ${mediaHtml} <!-- Se inserta el multimedia aquí -->
-        </div>
-        <div class="pc-footer">
-            <span>🔥 ${h.likes || 0}</span>
-            <span>💬 ${h.comentariosCount || 0}</span>
-        </div>
-    `;
-    feed.appendChild(post);
-});
+        // Procesar imagen y audio si existen en la BD
+        let mediaHtml = '';
+        if (h.imagen) {
+            mediaHtml += `<img src="${h.imagen}" style="width: 100%; border-radius: 12px; margin-top: 15px; object-fit: cover; max-height: 300px;" loading="lazy" alt="Imagen adjunta">`;
+        }
+        if (h.audio) {
+            mediaHtml += `<div style="margin-top: 15px;" onclick="event.stopPropagation()">
+                <audio controls src="${h.audio}" style="width: 100%; height: 40px; border-radius: 20px;"></audio>
+            </div>`;
+        }
+
+        post.innerHTML = `
+            <div class="pc-header">
+                <span class="badge-cat" style="background:${color}; color:#000;">${catName}</span>
+                <div class="pc-meta">📍 ${h.ciudad} &nbsp;&nbsp; ${formatFecha(h.fecha)}</div>
+            </div>
+            ${titleHtml}
+            <div class="pc-body">
+                ${h.texto}
+                ${mediaHtml}
+            </div>
+            <div class="pc-footer">
+                <span>🔥 ${h.likes || 0}</span>
+                <span>💬 ${h.comentariosCount || 0}</span>
+            </div>
+        `;
+        feed.appendChild(post);
+    });
 }
