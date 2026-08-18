@@ -1,5 +1,5 @@
 // ==========================================================
-// FEED: historias IG, filtros y listado principal de confesiones.
+// FEED: historias IG reales, filtros y listado principal de confesiones.
 // ==========================================================
 import { db } from './firebase-init.js';
 import {
@@ -8,14 +8,26 @@ import {
 import { appState } from './state.js';
 import { openDetail } from './comments.js';
 
+// --- HISTORIAS IG DINÁMICAS (Tomadas de los posts reales con foto) ---
 export function renderStories() {
     const container = document.getElementById('storiesContainer');
+    if (!container) return;
     container.innerHTML = '';
-    appState.staticData.historias_ig.forEach(story => {
+
+    // Filtramos solo las confesiones que tienen imagen subida
+    const postsConFoto = appState.posts.filter(p => p.imagen);
+
+    if (postsConFoto.length === 0) {
+        container.style.display = 'none'; // Oculta la barra si no hay fotos aún
+        return;
+    }
+
+    container.style.display = 'flex';
+    postsConFoto.slice(0, 15).forEach(post => {
         const div = document.createElement('div');
         div.className = 'story';
-        div.innerHTML = `<img src="${story.imagen}" alt="User"><span>${story.usuario}</span>`;
-        div.onclick = () => openStoryViewer(story.imagen);
+        div.innerHTML = `<img src="${post.imagen}" alt="Foto"><span>${post.ciudad}</span>`;
+        div.onclick = () => openStoryViewer(post.imagen);
         container.appendChild(div);
     });
 }
@@ -82,10 +94,11 @@ export function initFeed() {
     const q = query(collection(db, 'posts'), orderBy('fecha', 'desc'));
     onSnapshot(q, (snapshot) => {
         appState.posts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderStories(); // Actualiza las historias con las fotos reales
         applyFilters();
     }, (error) => {
         console.error('Error escuchando posts:', error);
-        feed.innerHTML = `<p style="text-align:center; color:#D1D5DB;">No se pudo conectar con la base de datos. Revisa tu configuración de Firebase.</p>`;
+        feed.innerHTML = `<p style="text-align:center; color:#D1D5DB;">No se pudo conectar con la base de datos.</p>`;
     });
 }
 
@@ -127,7 +140,6 @@ function renderFeed(historias) {
 
         let titleHtml = h.titulo ? `<div class="pc-title">${h.titulo}</div>` : '';
 
-        // Procesar imagen y audio si existen en la BD
         let mediaHtml = '';
         if (h.imagen) {
             mediaHtml += `<img src="${h.imagen}" style="width: 100%; border-radius: 12px; margin-top: 15px; object-fit: cover; max-height: 300px;" loading="lazy" alt="Imagen adjunta">`;
