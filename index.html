@@ -89,9 +89,15 @@
                 </div>
 
                 <div class="file-inputs">
-                    <label class="file-btn"><i class="fa-solid fa-image"></i> Imagen <input type="file" hidden></label>
-                    <label class="file-btn"><i class="fa-solid fa-microphone"></i> Audio <input type="file" hidden></label>
-                </div>
+    <label class="file-btn">
+        <i class="fa-solid fa-image"></i> Imagen 
+        <input type="file" id="postImage" accept="image/*" hidden>
+    </label>
+    <label class="file-btn">
+        <i class="fa-solid fa-microphone"></i> Audio 
+        <input type="file" id="postAudio" accept="audio/*" hidden>
+    </label>
+</div>
 
                 <div class="modal-actions">
                     <button type="button" class="btn-text" id="closeSubmit">Cancelar</button>
