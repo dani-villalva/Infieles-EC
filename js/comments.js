@@ -4,14 +4,16 @@
 import { db } from './firebase-init.js';
 import {
     collection, addDoc, doc, updateDoc, increment, query, where,
-    orderBy, onSnapshot, serverTimestamp
+    onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { appState } from './state.js';
 
 function formatFecha(timestamp) {
     if (!timestamp || !timestamp.toDate) return 'Ahora';
     const d = timestamp.toDate();
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    const hh = d.getHours().toString().padStart(2, '0');
+    const mm = d.getMinutes().toString().padStart(2, '0');
+    return `${hh}:${mm}`;
 }
 
 export function openDetail(postId) {
@@ -20,7 +22,7 @@ export function openDetail(postId) {
 
     appState.activePostId = postId;
 
-    const catData = appState.staticData.categorias.find(c => c.id === post.categoria);
+    const catData = appState.staticData?.categorias?.find(c => c.id === post.categoria);
     const catName = catData ? catData.nombre : post.categoria;
     const color = catData ? catData.color : '#FDA1CB';
 
@@ -60,14 +62,14 @@ export function openDetail(postId) {
 
     if (appState.commentsUnsub) appState.commentsUnsub();
 
+    // Consulta simplificada para evitar errores de índices en Firebase
     const q = query(
         collection(db, 'comments'),
-        where('postId', '==', postId),
-        orderBy('fecha', 'asc')
+        where('postId', '==', postId)
     );
 
     appState.commentsUnsub = onSnapshot(q, (snapshot) => {
-        const comments = snapshot.docs.map(d => d.data());
+        const comments = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         document.getElementById('commentCount').textContent = comments.length;
         list.innerHTML = '';
 
@@ -76,15 +78,25 @@ export function openDetail(postId) {
             return;
         }
 
+        // Ordenar en JS de más antiguo a más nuevo
+        comments.sort((a, b) => {
+            const timeA = a.fecha?.toMillis ? a.fecha.toMillis() : 0;
+            const timeB = b.fecha?.toMillis ? b.fecha.toMillis() : 0;
+            return timeA - timeB;
+        });
+
         comments.forEach(c => {
             const div = document.createElement('div');
             div.className = 'comment-card';
             div.innerHTML = `
                 <div class="c-head"><span>Anónimo</span> <span>${formatFecha(c.fecha)}</span></div>
-                <p>${c.texto}</p>
+                <p style="color:#fff; font-size:0.95rem; line-height:1.4;">${c.texto}</p>
             `;
             list.appendChild(div);
         });
+    }, (error) => {
+        console.error("Error al obtener comentarios:", error);
+        list.innerHTML = `<p style="text-align:center; color:#ff4d6d; font-size:0.85rem;">Error al cargar comentarios.</p>`;
     });
 
     modal.classList.remove('hidden');
@@ -101,22 +113,29 @@ export function closeDetail() {
 
 async function sendComment() {
     const input = document.getElementById('newCommentInput');
+    const sendBtn = document.getElementById('sendCommentBtn');
     const text = input.value.trim();
+    
     if (text === '' || !appState.activePostId) return;
 
     input.value = '';
+    sendBtn.disabled = true;
+
     try {
         await addDoc(collection(db, 'comments'), {
             postId: appState.activePostId,
             texto: text,
             fecha: serverTimestamp()
         });
+
         await updateDoc(doc(db, 'posts', appState.activePostId), {
             comentariosCount: increment(1)
         });
     } catch (error) {
         console.error('Error enviando comentario:', error);
         alert('No se pudo enviar el comentario.');
+    } finally {
+        sendBtn.disabled = false;
     }
 }
 
