@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Infieles EC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: #1e1e24; color: white; font-family: 'Inter', sans-serif; padding: 20px; }
+        h1 { color: #FDA1CB; text-align: center; }
+        .post-list { display: flex; flex-direction: column; gap: 15px; max-width: 800px; margin: 0 auto; }
+        .admin-card { background: #2d2d35; padding: 15px; border-radius: 10px; border: 1px solid #444; }
+        .admin-card span { font-size: 0.8rem; color: #aaa; }
+        .btn-delete { background: #ff4d6d; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px;}
+        .btn-delete:hover { background: #ff1a43; }
+        img, audio { display: block; margin-top: 10px; max-width: 100px; }
+    </style>
+</head>
+<body>
+    <h1>Moderar Confesiones</h1>
+    <div id="adminPanel" class="post-list">
+        <p style="text-align:center;">Cargando...</p>
+    </div>
+
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
