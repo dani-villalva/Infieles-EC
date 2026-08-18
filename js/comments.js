@@ -30,6 +30,17 @@ export function openDetail(postId) {
 
     let titleHtml = post.titulo ? `<h3 style="margin-bottom:10px; font-size:1.2rem; color:#fff;">${post.titulo}</h3>` : '';
 
+    // Mostrar imagen y audio en el detalle si existen
+    let mediaHtml = '';
+    if (post.imagen) {
+        mediaHtml += `<img src="${post.imagen}" style="width: 100%; border-radius: 12px; margin-top: 15px; object-fit: cover;" alt="Imagen">`;
+    }
+    if (post.audio) {
+        mediaHtml += `<div style="margin-top: 15px;">
+            <audio controls src="${post.audio}" style="width: 100%; height: 40px;"></audio>
+        </div>`;
+    }
+
     content.innerHTML = `
         <div class="detail-post" style="border-left: 3px solid ${color};">
             <div class="pc-header" style="margin-bottom: 20px;">
@@ -37,14 +48,16 @@ export function openDetail(postId) {
                 <div class="pc-meta">📍 ${post.ciudad}</div>
             </div>
             ${titleHtml}
-            <div class="pc-body" style="font-size:1.15rem; color:#fff;">${post.texto}</div>
+            <div class="pc-body" style="font-size:1.15rem; color:#fff;">
+                ${post.texto}
+                ${mediaHtml}
+            </div>
         </div>
     `;
 
     list.innerHTML = `<p style="text-align:center; color:#D1D5DB; font-size:0.85rem;">Cargando comentarios...</p>`;
     document.getElementById('commentCount').textContent = '0';
 
-    // Cancela cualquier listener de comentarios anterior antes de abrir uno nuevo
     if (appState.commentsUnsub) appState.commentsUnsub();
 
     const q = query(
