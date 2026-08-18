@@ -121,29 +121,43 @@ function renderFeed(historias) {
         return;
     }
 
-    historias.forEach(h => {
-        const catData = appState.staticData.categorias.find(c => c.id === h.categoria);
-        const catName = catData ? catData.nombre : h.categoria;
-        const color = catData ? catData.color : '#FDA1CB';
+    // Dentro de tu renderFeed() en feed.js:
+historias.forEach(h => {
+    // ... [código de catName y color] ...
 
-        const post = document.createElement('div');
-        post.className = 'post-card';
-        post.onclick = () => openDetail(h.id);
+    const post = document.createElement('div');
+    post.className = 'post-card';
+    post.onclick = () => openDetail(h.id);
 
-        let titleHtml = h.titulo ? `<div class="pc-title">${h.titulo}</div>` : '';
+    let titleHtml = h.titulo ? `<div class="pc-title">${h.titulo}</div>` : '';
+    
+    // Generar HTML para multimedia si existen en la base de datos
+    let mediaHtml = '';
+    if (h.imagen) {
+        mediaHtml += `<img src="${h.imagen}" style="width: 100%; border-radius: 12px; margin-top: 15px; object-fit: cover;" alt="Imagen adjunta">`;
+    }
+    if (h.audio) {
+        // Detener la propagación para que al hacer clic en 'play' no se abra el post
+        mediaHtml += `<div style="margin-top: 15px;" onclick="event.stopPropagation()">
+            <audio controls src="${h.audio}" style="width: 100%; height: 40px;"></audio>
+        </div>`;
+    }
 
-        post.innerHTML = `
-            <div class="pc-header">
-                <span class="badge-cat" style="background:${color}; color:#000;">${catName}</span>
-                <div class="pc-meta">📍 ${h.ciudad} &nbsp;&nbsp; ${formatFecha(h.fecha)}</div>
-            </div>
-            ${titleHtml}
-            <div class="pc-body">${h.texto}</div>
-            <div class="pc-footer">
-                <span>🔥 ${h.likes || 0}</span>
-                <span>💬 ${h.comentariosCount || 0}</span>
-            </div>
-        `;
-        feed.appendChild(post);
-    });
+    post.innerHTML = `
+        <div class="pc-header">
+            <span class="badge-cat" style="background:${color}; color:#000;">${catName}</span>
+            <div class="pc-meta">📍 ${h.ciudad} &nbsp;&nbsp; ${formatFecha(h.fecha)}</div>
+        </div>
+        ${titleHtml}
+        <div class="pc-body">
+            ${h.texto}
+            ${mediaHtml} <!-- Se inserta el multimedia aquí -->
+        </div>
+        <div class="pc-footer">
+            <span>🔥 ${h.likes || 0}</span>
+            <span>💬 ${h.comentariosCount || 0}</span>
+        </div>
+    `;
+    feed.appendChild(post);
+});
 }
