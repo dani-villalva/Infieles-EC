@@ -4,64 +4,246 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Horóscopo Infiel - Infieles EC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Fuente Plus Jakarta Sans (Igual que apoyanos) -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons y FontAwesome -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+
     <style>
-        .zodiac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
-        .zodiac-card { background: #2d2d35; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .zodiac-card:hover, .zodiac-card.active { border-color: #FDA1CB; background: rgba(253, 161, 203, 0.1); }
-        .zodiac-icon { font-size: 2rem; margin-bottom: 5px; }
-        .zodiac-name { font-size: 0.85rem; color: #fff; font-weight: 600; }
+        /* === VARIABLES DE DISEÑO INFIELES EC === */
+        :root {
+            --bg-base: #52525B;
+            --bg-surface: rgba(30, 30, 35, 0.4);
+            --accent: #FDA1CB;
+            --accent-glow: rgba(253, 161, 203, 0.3);
+            --text-main: #FFFFFF;
+            --text-sec: rgba(255, 255, 255, 0.75);
+            --border: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(253, 161, 203, 0.4);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.5;
+            background-image: radial-gradient(circle at top, rgba(253, 161, 203, 0.08) 0%, transparent 70%);
+        }
+
+        /* === HEADER === */
+        .header-donaciones {
+            padding: 50px 20px 20px;
+            text-align: center; max-width: 700px; margin: 0 auto;
+            animation: fadeDown 0.6s ease forwards;
+        }
+        .header-donaciones h1 { font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 800; margin-bottom: 15px; letter-spacing: -1px; }
+        .header-donaciones h1 span { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+        .header-donaciones p { color: var(--text-sec); font-size: 15px; font-weight: 500; }
+
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+            padding: 8px 16px; border-radius: 50px; text-decoration: none;
+            font-size: 13px; color: #E2E8F0; font-weight: 600; transition: 0.3s;
+            position: absolute; top: 20px; left: 20px;
+        }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .section-main {
+            max-width: 700px; margin: 0 auto; padding: 0 20px 60px;
+            display: flex; flex-direction: column; gap: 24px;
+        }
+
+        /* === TARJETAS ESTILO GLASSMORPHISM === */
+        .box-card {
+            background: var(--bg-surface); border-radius: 20px;
+            padding: 30px; border: 1px solid var(--border);
+            backdrop-filter: blur(10px); position: relative; overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeUp 0.6s ease forwards; opacity: 0;
+        }
+        .box-card h2 { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .box-card h2 i { color: var(--accent); font-size: 22px; }
+
+        /* === CUADRÍCULA ZODIACAL === */
+        .zodiac-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+        }
+        @media (min-width: 500px) { .zodiac-grid { grid-template-columns: repeat(4, 1fr); } }
         
-        .horoscope-result { margin: 20px 15px; padding: 20px; background: #2d2d35; border-radius: 12px; border-left: 4px solid #FDA1CB; display: none; }
-        .horoscope-result h3 { margin-bottom: 10px; color: #FDA1CB; }
-        .horoscope-text { font-size: 0.95rem; color: #ddd; line-height: 1.5; margin-bottom: 15px; }
-        .infiel-tip { background: rgba(255, 77, 109, 0.1); padding: 12px; border-radius: 8px; color: #ff4d6d; font-weight: 500; font-size: 0.9rem; }
+        .zodiac-card {
+            background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+            border-radius: 14px; padding: 15px 5px; text-align: center;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .zodiac-card:hover, .zodiac-card.active {
+            border-color: var(--accent); background: rgba(253, 161, 203, 0.1);
+            transform: translateY(-4px); box-shadow: 0 8px 20px var(--accent-glow);
+        }
+        .zodiac-icon { font-size: 26px; margin-bottom: 5px; }
+        .zodiac-name { font-size: 12px; color: #fff; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* === RESULTADO DEL HORÓSCOPO === */
+        .horoscope-result { display: none; }
+        .horoscope-result.show { display: block; animation: fadeUp 0.5s ease forwards; }
+        .result-title { font-size: 22px; color: var(--accent); font-weight: 800; margin-bottom: 12px; }
+        .result-text { font-size: 15px; color: var(--text-sec); line-height: 1.6; margin-bottom: 20px; }
         
-        .loading { text-align: center; color: #aaa; padding: 20px; display: none; }
-        .loading i { font-size: 2rem; color: #FDA1CB; animation: spin 1s linear infinite; }
+        /* === CONSEJO INFIEL === */
+        .infiel-tip {
+            background: rgba(0,0,0,0.15); border: 1px solid var(--border);
+            border-left: 4px solid var(--accent); border-radius: 12px; padding: 15px;
+        }
+        .infiel-tip h4 { font-size: 14px; color: #fff; font-weight: 700; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
+        .infiel-tip h4 i { color: var(--accent); }
+        .infiel-tip p { font-size: 13.5px; color: var(--text-sec); margin: 0; }
+
+        /* === LOADER === */
+        .loading { text-align: center; padding: 30px; display: none; }
+        .loading i { font-size: 30px; color: var(--accent); animation: spin 1s linear infinite; margin-bottom: 15px; }
+        .loading p { color: var(--text-sec); font-size: 14px; font-weight: 600; }
+
+        /* Animaciones */
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <!-- Header Principal -->
-    <header class="app-header">
-        <div class="h-left" onclick="window.location.href='index.html'" style="cursor:pointer;">
-            <i class="fa-solid fa-arrow-left"></i> Volver
+
+<!-- Botón Volver -->
+<a href="index.html" class="btn-back">
+    <i class="ph-bold ph-arrow-left"></i> Volver
+</a>
+
+<!-- === HEADER === -->
+<div class="header-donaciones">
+    <h1>Astros <span>Infieles</span></h1>
+    <p>Descubre si los astros están a tu favor para ocultar tus secretos hoy o si es mejor que pongas el celular en modo avión.</p>
+</div>
+
+<div class="section-main">
+
+    <!-- CAJA 1: SELECCIÓN DE SIGNO -->
+    <div class="box-card delay-1">
+        <h2><i class="ph-fill ph-sparkle"></i> Elige tu signo zodiacal</h2>
+        
+        <div class="zodiac-grid" id="zodiacGrid">
+            <!-- Los signos se generan desde JavaScript -->
         </div>
-        <div class="h-center">
-            <h1>Astros <span class="accent-text">Infieles</span></h1>
-        </div>
-        <div class="h-right"></div>
-    </header>
-
-    <div class="daily-question" style="margin-top: 15px;">
-        <h4>🔮 Predicciones Tóxicas</h4>
-        <p>Descubre si los astros están a tu favor para ocultar tus secretos hoy. Elige tu signo:</p>
     </div>
 
-    <!-- Cuadrícula de Signos -->
-    <div class="zodiac-grid" id="zodiacGrid">
-        <!-- Generado por JS -->
+    <!-- CAJA 2: LOADER (Oculto por defecto) -->
+    <div class="box-card loading" id="loader">
+        <i class="ph-bold ph-spinner-gap"></i>
+        <p>Consultando a los astros...</p>
     </div>
 
-    <!-- Loader -->
-    <div class="loading" id="loader">
-        <i class="fa-solid fa-spinner"></i>
-        <p style="margin-top: 10px;">Consultando a los astros...</p>
-    </div>
-
-    <!-- Resultado -->
-    <div class="horoscope-result" id="horoscopeResult">
-        <h3 id="resultTitle">Signo</h3>
-        <p class="horoscope-text" id="resultText">Predicción general...</p>
+    <!-- CAJA 3: RESULTADO (Oculto por defecto) -->
+    <div class="box-card horoscope-result" id="horoscopeResult">
+        <div class="result-title" id="resultTitle">🔮 Signo</div>
+        <p class="result-text" id="resultText">Aquí aparecerá la predicción de los astros para tu día.</p>
+        
         <div class="infiel-tip">
-            <strong>🔥 Consejo Infiel del día:</strong>
-            <p id="resultTip" style="margin-top: 5px;">Cargando consejo...</p>
+            <h4><i class="ph-fill ph-warning-circle"></i> Consejo Tóxico del Día</h4>
+            <p id="resultTip">Cargando consejo...</p>
         </div>
     </div>
 
-    <script type="module" src="js/horoscopo.js"></script>
+</div>
+
+<!-- SCRIPT (Lógica del Horóscopo) -->
+<script>
+    // URL DE TU WORKER DE CLOUDFLARE
+    const WORKER_PROXY_URL = "https://proxy-horoscopo.doramastv.workers.dev";
+
+    const signos = [
+        { id: "aries", icon: "♈", name: "Aries", tip: "Borra ese chat ahora mismo. Marte indica que hoy te van a pedir prestado el celular." },
+        { id: "taurus", icon: "♉", name: "Tauro", tip: "No gastes en regalos con la tarjeta de crédito compartida. Deja rastro." },
+        { id: "gemini", icon: "♊", name: "Géminis", tip: "Cuidado con a quién le mandas ese mensaje, hoy andas distraído y puedes equivocarte de chat." },
+        { id: "cancer", icon: "♋", name: "Cáncer", tip: "Demasiado sentimentalismo hoy. No te enamores de tu aventura, es solo para el rato." },
+        { id: "leo", icon: "♌", name: "Leo", tip: "Ese chupón en el cuello no pasa por 'picadura de araña'. Usa bufanda." },
+        { id: "virgo", icon: "♍", name: "Virgo", tip: "Tú que eres perfeccionista: revisa que no haya cabellos ajenos en tu asiento del copiloto." },
+        { id: "libra", icon: "♎", name: "Libra", tip: "No puedes tener a ambos felices hoy. Inventa una excusa laboral creíble." },
+        { id: "scorpio", icon: "♏", name: "Escorpio", tip: "Tu intuición no falla: si sientes que sospechan, pon el celular en modo avión." },
+        { id: "sagittarius", icon: "♐", name: "Sagitario", tip: "Desactiva la ubicación en tiempo real. Tu espíritu aventurero te va a delatar hoy." },
+        { id: "capricorn", icon: "♑", name: "Capricornio", tip: "Agendaste mal. Revisa tu calendario antes de que se te crucen los planes en el mismo restaurante." },
+        { id: "aquarius", icon: "♒", name: "Acuario", tip: "Esa app para ocultar fotos falló en la última actualización. Cámbiale la contraseña." },
+        { id: "pisces", icon: "♓", name: "Piscis", tip: "Deja de ponerle nombres de tías a tus contactos. Ponle 'Mecánico Juan', es más seguro." }
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const grid = document.getElementById("zodiacGrid");
+        
+        signos.forEach(signo => {
+            const div = document.createElement("div");
+            div.className = "zodiac-card";
+            div.innerHTML = `
+                <div class="zodiac-icon">${signo.icon}</div>
+                <div class="zodiac-name">${signo.name}</div>
+            `;
+            div.onclick = () => getHoroscope(signo, div);
+            grid.appendChild(div);
+        });
+    });
+
+    async function getHoroscope(signoData, cardElement) {
+        // UI Updates
+        document.querySelectorAll(".zodiac-card").forEach(c => c.classList.remove("active"));
+        cardElement.classList.add("active");
+        
+        document.getElementById("horoscopeResult").classList.remove("show");
+        document.getElementById("loader").style.display = "block";
+        
+        // Bajar la pantalla suavemente
+        setTimeout(() => {
+            document.getElementById("loader").scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+
+        try {
+            const response = await fetch(`${WORKER_PROXY_URL}?sign=${signoData.id}`);
+            if (!response.ok) throw new Error("Error en la red");
+            
+            const data = await response.json();
+            const prediccionApi = data?.data?.horoscope || "Los astros están alineados a tu favor. Hoy nadie sospechará nada, pero mantén un perfil bajo.";
+
+            // Mostrar resultados
+            document.getElementById("loader").style.display = "none";
+            const resultBox = document.getElementById("horoscopeResult");
+            
+            document.getElementById("resultTitle").innerHTML = `${signoData.icon} ${signoData.name}`;
+            document.getElementById("resultText").textContent = prediccionApi;
+            document.getElementById("resultTip").textContent = signoData.tip;
+            
+            resultBox.classList.add("show");
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        } catch (error) {
+            console.error("Error obteniendo horóscopo:", error);
+            document.getElementById("loader").style.display = "none";
+            
+            // Si el worker falla o aún no has puesto tu URL, muestra el modo fallback
+            const resultBox = document.getElementById("horoscopeResult");
+            document.getElementById("resultTitle").innerHTML = `${signoData.icon} ${signoData.name}`;
+            document.getElementById("resultText").textContent = "La conexión con el universo falló, pero tu instinto de supervivencia no. Confía en tu intuición hoy y no dejes el WhatsApp abierto en la computadora.";
+            document.getElementById("resultTip").textContent = signoData.tip;
+            
+            resultBox.classList.add("show");
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+</script>
+
 </body>
 </html>
