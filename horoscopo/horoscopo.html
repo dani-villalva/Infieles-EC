@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Horóscopo Infiel - Infieles EC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .zodiac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
+        .zodiac-card { background: #2d2d35; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px 5px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .zodiac-card:hover, .zodiac-card.active { border-color: #FDA1CB; background: rgba(253, 161, 203, 0.1); }
+        .zodiac-icon { font-size: 2rem; margin-bottom: 5px; }
+        .zodiac-name { font-size: 0.85rem; color: #fff; font-weight: 600; }
+        
+        .horoscope-result { margin: 20px 15px; padding: 20px; background: #2d2d35; border-radius: 12px; border-left: 4px solid #FDA1CB; display: none; }
+        .horoscope-result h3 { margin-bottom: 10px; color: #FDA1CB; }
+        .horoscope-text { font-size: 0.95rem; color: #ddd; line-height: 1.5; margin-bottom: 15px; }
+        .infiel-tip { background: rgba(255, 77, 109, 0.1); padding: 12px; border-radius: 8px; color: #ff4d6d; font-weight: 500; font-size: 0.9rem; }
+        
+        .loading { text-align: center; color: #aaa; padding: 20px; display: none; }
+        .loading i { font-size: 2rem; color: #FDA1CB; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <!-- Header Principal -->
+    <header class="app-header">
+        <div class="h-left" onclick="window.location.href='index.html'" style="cursor:pointer;">
+            <i class="fa-solid fa-arrow-left"></i> Volver
+        </div>
+        <div class="h-center">
+            <h1>Astros <span class="accent-text">Infieles</span></h1>
+        </div>
+        <div class="h-right"></div>
+    </header>
+
+    <div class="daily-question" style="margin-top: 15px;">
+        <h4>🔮 Predicciones Tóxicas</h4>
+        <p>Descubre si los astros están a tu favor para ocultar tus secretos hoy. Elige tu signo:</p>
+    </div>
+
+    <!-- Cuadrícula de Signos -->
+    <div class="zodiac-grid" id="zodiacGrid">
+        <!-- Generado por JS -->
+    </div>
+
+    <!-- Loader -->
+    <div class="loading" id="loader">
+        <i class="fa-solid fa-spinner"></i>
+        <p style="margin-top: 10px;">Consultando a los astros...</p>
+    </div>
+
+    <!-- Resultado -->
+    <div class="horoscope-result" id="horoscopeResult">
+        <h3 id="resultTitle">Signo</h3>
+        <p class="horoscope-text" id="resultText">Predicción general...</p>
+        <div class="infiel-tip">
+            <strong>🔥 Consejo Infiel del día:</strong>
+            <p id="resultTip" style="margin-top: 5px;">Cargando consejo...</p>
+        </div>
+    </div>
+
+    <script type="module" src="js/horoscopo.js"></script>
+</body>
+</html>
