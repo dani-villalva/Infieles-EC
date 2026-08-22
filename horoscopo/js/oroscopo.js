@@ -3,7 +3,7 @@
 // ==========================================================
 
 // ⚠️ REEMPLAZA ESTA URL POR LA DE TU CLOUDFLARE WORKER CUANDO LO CREES
-const WORKER_PROXY_URL = "https://tu-worker-horoscopo.tu-usuario.workers.dev";
+const WORKER_PROXY_URL = "https://proxy-horoscopo.doramastv.workers.dev";
 
 const signos = [
     { id: "aries", icon: "♈", name: "Aries", tip: "Borra ese chat ahora mismo. Marte indica que hoy te van a pedir prestado el celular." },
